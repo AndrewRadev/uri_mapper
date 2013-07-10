@@ -1,7 +1,7 @@
 require 'cgi'
 require 'rack/utils'
 
-module RequestMapper
+module UriMapper
   class Query
     def initialize(string)
       @raw_query = string

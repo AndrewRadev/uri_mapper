@@ -1,7 +1,7 @@
 require 'uri'
-require 'request_mapper/query'
+require 'uri_mapper/query'
 
-module RequestMapper
+module UriMapper
   class Uri
     def initialize(string)
       @uri = URI.parse(string)

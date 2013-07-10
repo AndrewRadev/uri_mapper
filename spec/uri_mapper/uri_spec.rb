@@ -1,7 +1,7 @@
 require 'spec_helper'
-require 'request_mapper/uri'
+require 'uri_mapper/uri'
 
-module RequestMapper
+module UriMapper
   describe Uri do
     describe "#map(:query)" do
       let(:uri) { Uri.new('http://example.com?search=foo') }
