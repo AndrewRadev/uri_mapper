@@ -2,27 +2,37 @@ require 'cgi'
 require 'rack/utils'
 
 module UriMapper
+  # TODO (2013-07-10) Check if subject to serialize responds to #to_query
   class Query
-    def initialize(string)
-      @raw_query = string
+    def initialize(string_or_hash)
+      if string_or_hash.is_a? Hash
+        @params = string_or_hash
+      else
+        @raw_query = string_or_hash
+      end
     end
 
-    def query_params
-      @query_params ||= Rack::Utils.parse_query(@raw_query)
+    def params
+      @params ||= Rack::Utils.parse_query(@raw_query)
     end
 
     def [](k)
-      query_params[k.to_s]
+      params[k.to_s]
     end
 
     def []=(k, v)
-      query_params[k.to_s] = v
+      params[k.to_s] = v
+    end
+
+    def merge(other)
+      other = Query.new(other) if not other.is_a?(Query)
+      @params = params.merge(other.params)
     end
 
     def to_s
-      if @query_params
+      if @params
         # then we've accessed it once, use that as source
-        build_query(@query_params)
+        build_query(@params)
       else
         # untouched, just return the old one
         @raw_query
