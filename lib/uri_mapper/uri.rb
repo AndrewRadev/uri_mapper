@@ -14,14 +14,14 @@ module UriMapper
     end
 
     def query=(v)
-      @query = (v.is_a?(Query) ? v : Query.new(v))
+      @query = Query.build(v)
     end
 
     def map(component = nil, &block)
       Uri.new(@uri.to_s).map!(component, &block)
     end
 
-    alias_method :merge, :map
+    alias_method :change, :map
 
     def map!(component = nil)
       # No component requested, just yield the whole thing
@@ -33,7 +33,7 @@ module UriMapper
       # Components with static changes, just merge them in
       if component.is_a? Hash
         if component.keys.length == 1 and component.keys.first == :query
-          self.query = query.merge(component[:query])
+          self.query = Query.build(component[:query])
         else
           raise "Not implemented for different components yet"
         end
@@ -44,7 +44,7 @@ module UriMapper
       # Component and a block
       case component.to_sym
       when :query
-        @uri.query = yield query
+        self.query = Query.build(yield query)
       when :subdomain
         # TODO (2013-07-10) Implement
       else
@@ -53,8 +53,6 @@ module UriMapper
 
       self
     end
-
-    alias_method :merge!, :map!
 
     def to_s
       uri = @uri.dup

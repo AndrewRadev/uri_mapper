@@ -30,7 +30,8 @@ module UriMapper
     # Override
     def merge!(other)
       other = Query.build(other)
-      @params = params.merge(other.params)
+      other.params.each { |k, v| params[k.to_s] = v }
+      self
     end
 
     def to_s

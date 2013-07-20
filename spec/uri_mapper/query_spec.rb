@@ -37,6 +37,7 @@ module UriMapper
 
         query.merge('two' => 'red').to_s.should eq 'one=blue&two=red'
         query.merge('two=red').to_s.should eq 'one=blue&two=red'
+        query.merge('one=red').to_s.should eq 'one=red'
       end
     end
 

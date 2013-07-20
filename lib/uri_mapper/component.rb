@@ -13,14 +13,14 @@ module UriMapper
     end
 
     def merge(other)
-      copy = dup
-      copy.merge!(other)
-      copy
+      dup.merge!(other)
     end
+    alias_method :+, :merge
 
     def merge!(other)
       raise NotImplementedError
     end
+    alias_method :'+=', :merge!
 
     def ==(other)
       to_s == other.to_s
