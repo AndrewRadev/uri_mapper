@@ -4,11 +4,19 @@ require 'rack/utils'
 module UriMapper
   # TODO (2013-07-10) Check if subject to serialize responds to #to_query
   class Query
-    def initialize(string_or_hash)
-      if string_or_hash.is_a? Hash
-        @params = string_or_hash
+    def self.build(source)
+      if source.is_a?(self)
+        source
       else
-        @raw_query = string_or_hash
+        new(source)
+      end
+    end
+
+    def initialize(source)
+      if source.is_a? Hash
+        @params = source
+      else
+        @raw_query = source
       end
     end
 
@@ -37,6 +45,10 @@ module UriMapper
         # untouched, just return the old one
         @raw_query
       end
+    end
+
+    def ==(other)
+      to_s == other.to_s
     end
 
     private
