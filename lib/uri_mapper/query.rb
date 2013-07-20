@@ -1,20 +1,15 @@
 require 'cgi'
 require 'rack/utils'
+require 'uri_mapper/component'
 
 module UriMapper
-  # TODO (2013-07-10) Check if subject to serialize responds to #to_query
-  class Query
-    def self.build(source)
-      if source.is_a?(self)
-        source
-      else
-        new(source)
-      end
-    end
-
+  class Query < Component
+    # Override
     def initialize(source)
       if source.is_a? Hash
         @params = source
+      elsif source.respond_to?(:to_query)
+        @raw_query = source.to_query
       else
         @raw_query = source
       end
@@ -32,8 +27,9 @@ module UriMapper
       params[k.to_s] = v
     end
 
-    def merge(other)
-      other = Query.new(other) if not other.is_a?(Query)
+    # Override
+    def merge!(other)
+      other = Query.build(other)
       @params = params.merge(other.params)
     end
 
@@ -47,17 +43,20 @@ module UriMapper
       end
     end
 
-    def ==(other)
-      to_s == other.to_s
-    end
-
     private
 
-    # TODO (2013-07-05) test
     def build_query(params)
       params.map do |key, value|
-        if value.is_a? Hash
-          "#{CGI.escape(key.to_s)}=#{build_query(value)}"
+        if value.respond_to?(:to_query)
+          "#{CGI.escape(key.to_s)}=#{CGI.escape(value.to_query)}"
+        elsif value.is_a? Array
+          value.map do |v|
+            build_query("#{key.to_s}[]" => v)
+          end
+        elsif value.is_a? Hash
+          value.map do |subkey, v|
+            build_query("#{key.to_s}[#{subkey}]" => v)
+          end
         else
           "#{CGI.escape(key.to_s)}=#{CGI.escape(value.to_s)}"
         end
