@@ -12,6 +12,30 @@ module UriMapper
       end
     end
 
+    describe "#map(:subdomains)" do
+      let(:uri) { Uri.new('http://example.com') }
+
+      it "sets additional subdomains" do
+        new_uri = uri.map(:subdomains => ['en'])
+        new_uri.to_s.should eq 'http://en.example.com'
+
+        new_uri = uri.map(:subdomains => ['one', 'two'])
+        new_uri.to_s.should eq 'http://one.two.example.com'
+      end
+
+      it "replaces existing additional subdomains" do
+        uri = Uri.new('http://en.example.com')
+        new_uri = uri.map(:subdomains => ['de'])
+        new_uri.to_s.should eq 'http://de.example.com'
+      end
+
+      it "changes existing additional subdomains" do
+        uri = Uri.new('http://en.example.com')
+        new_uri = uri.map(:subdomains) { |ss| ss.map(&:upcase) }
+        new_uri.to_s.should eq 'http://EN.example.com'
+      end
+    end
+
     describe "#map(:query)" do
       let(:uri) { Uri.new('http://example.com?search=foo') }
 

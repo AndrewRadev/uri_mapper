@@ -1,9 +1,10 @@
 require 'uri'
 require 'uri_mapper/query'
+require 'uri_mapper/subdomains'
 
 module UriMapper
   # TODO (2013-07-10) component list: raw components, wrapped components (dependencies?)
-  # TODO (2013-07-10) Think about how map/merge should behave for `query`: merge params or override them?
+  # TODO (2013-07-29) Different methods for building from URI and from user content
   class Uri
     def initialize(string)
       @uri = URI.parse(string)
@@ -15,6 +16,23 @@ module UriMapper
 
     def query=(v)
       @query = Query.build(v)
+    end
+
+    def subdomains
+      @subdomains ||= Subdomains.build(@uri.host)
+    end
+
+    def subdomains=(v)
+      @subdomains = Subdomains.build(v)
+      @host = nil
+    end
+
+    def host
+      @host ||= (subdomains.to_a + domains.to_a).join('.')
+    end
+
+    def domains
+      @domains ||= @uri.host.split('.').last(2)
     end
 
     def map(component = nil, &block)
@@ -32,10 +50,8 @@ module UriMapper
 
       # Components with static changes, just merge them in
       if component.is_a? Hash
-        if component.keys.length == 1 and component.keys.first == :query
-          self.query = Query.build(component[:query])
-        else
-          raise "Not implemented for different components yet"
+        component.each do |name, replacement|
+          self.send("#{name}=", replacement)
         end
 
         return self
@@ -45,8 +61,8 @@ module UriMapper
       case component.to_sym
       when :query
         self.query = Query.build(yield query)
-      when :subdomain
-        # TODO (2013-07-10) Implement
+      when :subdomains
+        self.subdomains = Subdomains.build(yield subdomains)
       else
         raise "Unknown URI component: #{component}"
       end
@@ -56,7 +72,10 @@ module UriMapper
 
     def to_s
       uri = @uri.dup
+
       uri.query = query.to_s
+      uri.host  = host.to_s
+
       uri.to_s
     end
   end
