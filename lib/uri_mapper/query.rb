@@ -4,9 +4,14 @@ require 'uri_mapper/component'
 
 module UriMapper
   class Query < Component
-    # Override
     def initialize(source)
-      if source.is_a? Hash
+      reload(source)
+    end
+
+    def reload(source)
+      if source.is_a? Query
+        @params = source.to_h
+      elsif source.is_a? Hash
         @params = source
       elsif source.respond_to?(:to_query)
         @raw_query = source.to_query
@@ -30,6 +35,7 @@ module UriMapper
     # Override
     def merge!(other)
       other = Query.build(other)
+      params
       other.params.each { |k, v| params[k.to_s] = v }
       self
     end
@@ -42,6 +48,10 @@ module UriMapper
         # untouched, just return the old one
         @raw_query
       end
+    end
+
+    def to_h
+      params
     end
 
     private

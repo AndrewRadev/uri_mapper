@@ -11,11 +11,11 @@ module UriMapper
     end
 
     def query
-      @query ||= Query.new(@uri.query)
+      @query ||= Query.build(@uri.query)
     end
 
     def query=(v)
-      @query = Query.build(v)
+      query.reload(v)
     end
 
     def subdomains
@@ -23,7 +23,7 @@ module UriMapper
     end
 
     def subdomains=(v)
-      @subdomains = Subdomains.build(v)
+      subdomains.reload(v)
       @host = nil
     end
 
@@ -51,7 +51,7 @@ module UriMapper
       # Components with static changes, just merge them in
       if component.is_a? Hash
         component.each do |name, replacement|
-          self.send("#{name}=", replacement)
+          send(name).reload(replacement)
         end
 
         return self
@@ -60,9 +60,9 @@ module UriMapper
       # Component and a block
       case component.to_sym
       when :query
-        self.query = Query.build(yield query)
+        self.query = query.dup.reload(yield query)
       when :subdomains
-        self.subdomains = Subdomains.build(yield subdomains)
+        self.subdomains = subdomains.dup.reload(yield subdomains)
       else
         raise "Unknown URI component: #{component}"
       end

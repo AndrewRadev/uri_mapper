@@ -12,6 +12,10 @@ module UriMapper
       raise NotImplementedError
     end
 
+    def reload(*)
+      raise NotImplementedError
+    end
+
     def merge(other)
       dup.merge!(other)
     end

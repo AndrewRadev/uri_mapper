@@ -5,12 +5,11 @@ module UriMapper
     include Enumerable
 
     def initialize(host)
-      if host.is_a? Array
-        # it's actually a list of domains
-        @subdomains = host
-      else
-        @subdomains = host.split('.')[0..-3]
-      end
+      @subdomains = host.split('.')[0..-3]
+    end
+
+    def reload(subdomains)
+      @subdomains = subdomains
     end
 
     def to_a
