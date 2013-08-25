@@ -32,12 +32,6 @@ module UriMapper
       @uri        = URI.parse(string)
     end
 
-    def map(component = nil, &block)
-      Uri.new(@uri.to_s).map!(component, &block)
-    end
-
-    alias_method :change, :map
-
     def get(component_name)
       if self.class.component_names.include?(component_name)
         public_send(component_name)
@@ -50,25 +44,26 @@ module UriMapper
       get(component_name).reload(replacement)
     end
 
-    def map!(component = nil)
-      # No component requested, just yield the whole thing
-      if not component
-        yield self
-        return self
-      end
+    def map(component = nil, &block)
+      Uri.new(@uri.to_s).map!(component, &block)
+    end
 
-      # Components with static changes, just merge them in
-      if component.is_a? Hash
+    alias_method :change, :map
+
+    def map!(component = nil)
+      if not component
+        # No component requested, just yield the whole thing
+        yield self
+      elsif component.is_a? Hash
+        # Components with static changes, just merge them in
         component.each do |name, replacement|
           set(name, replacement)
         end
-
-        return self
+      else
+        # Component and a block
+        replacement = yield get(component)
+        set(component, replacement)
       end
-
-      # Component and a block
-      replacement = yield get(component)
-      set(component, replacement)
 
       self
     end
