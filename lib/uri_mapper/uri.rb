@@ -1,14 +1,33 @@
 require 'uri'
 require 'uri_mapper/uri_builder'
+require 'uri_mapper/path'
 require 'uri_mapper/query'
 require 'uri_mapper/subdomains'
 
+# TODO (2013-08-25) Consider responsibilities: does Uri split things into
+# parts, or does <component>#build ?
+#
+# TODO (2013-08-25) Make a testing plan, this'll get complicated
+#
 module UriMapper
   class Uri
     extend UriBuilder
 
+    # TODO (2013-08-25) alias_component, use both :scheme and :protocol
+    component :scheme do
+      @uri.scheme
+    end
+
     component :host, :depends => [:subdomains] do
       (subdomains.to_a + domains.raw).join('.')
+    end
+
+    component :path, :class => Path do
+      @uri.path
+    end
+
+    component :query, :class => Query do
+      @uri.query
     end
 
     component :domains, :depends => [:host] do
@@ -17,10 +36,6 @@ module UriMapper
 
     component :subdomains, :class => Subdomains, :depends => [:host] do
       @uri.host
-    end
-
-    component :query, :class => Query do
-      Query.build(@uri.query)
     end
 
     def initialize(string)
@@ -74,8 +89,10 @@ module UriMapper
     def to_s
       uri = @uri.dup
 
-      uri.query = query.to_s
-      uri.host  = host.to_s
+      uri.scheme = scheme.to_s
+      uri.host   = host.to_s
+      uri.path   = path.to_s
+      uri.query  = query.to_s
 
       uri.to_s
     end
