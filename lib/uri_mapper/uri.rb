@@ -18,7 +18,7 @@ module UriMapper
       @uri.scheme
     end
 
-    component :host, :depends => [:subdomains] do
+    component :host, :depends => [:subdomains, :domains] do
       (subdomains.to_a + domains.raw).join('.')
     end
 
