@@ -16,8 +16,14 @@ module UriMapper
     end
 
     def component(component_name, options = {}, &block)
-      dependent_components = options[:depends] || []
-      klass                = options[:class]   || SimpleComponent
+      depends = options[:depends] || []
+      klass   = options[:class]   || SimpleComponent
+
+      if block.nil? and depends.length == 1
+        block = lambda { |context| @uri.public_send(depends.first) }
+      elsif block.nil?
+        block = lambda { |context| @uri.public_send(component_name) }
+      end
 
       @@component_names << component_name
 
@@ -28,7 +34,7 @@ module UriMapper
       define_method("#{component_name}=") do |value|
         self.public_send(component_name).reload(value)
 
-        dependent_components.each do |component_name|
+        depends.each do |component_name|
           @components[component_name] = nil
         end
       end

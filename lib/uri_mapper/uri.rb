@@ -14,28 +14,17 @@ module UriMapper
     extend UriBuilder
 
     # TODO (2013-08-25) alias_component, use both :scheme and :protocol
-    component :scheme do
-      @uri.scheme
-    end
+    component :scheme
+    component :path, :class => Path
+    component :query, :class => Query
+    component :subdomains, :class => Subdomains, :depends => [:host]
 
     component :host, :depends => [:subdomains, :domains] do
       (subdomains.to_a + domains.raw).join('.')
     end
 
-    component :path, :class => Path do
-      @uri.path
-    end
-
-    component :query, :class => Query do
-      @uri.query
-    end
-
     component :domains, :depends => [:host] do
       @uri.host.split('.').last(2)
-    end
-
-    component :subdomains, :class => Subdomains, :depends => [:host] do
-      @uri.host
     end
 
     def initialize(string)
