@@ -1,38 +1,31 @@
 require 'uri'
+require 'uri_mapper/uri_builder'
 require 'uri_mapper/query'
 require 'uri_mapper/subdomains'
 
 module UriMapper
-  # TODO (2013-07-10) component list: raw components, wrapped components (dependencies?)
-  # TODO (2013-07-29) Different methods for building from URI and from user content
   class Uri
+    extend UriBuilder
+
+    component :query do
+      Query.build(@uri.query)
+    end
+
+    component :host, :depends => [:subdomains] do
+      (subdomains.to_a + domains.to_a).join('.')
+    end
+
+    component :domains, :depends => [:host] do
+      @uri.host.split('.').last(2)
+    end
+
+    component :subdomains, :depends => [:host] do
+      Subdomains.build(@uri.host)
+    end
+
     def initialize(string)
-      @uri = URI.parse(string)
-    end
-
-    def query
-      @query ||= Query.build(@uri.query)
-    end
-
-    def query=(v)
-      query.reload(v)
-    end
-
-    def subdomains
-      @subdomains ||= Subdomains.build(@uri.host)
-    end
-
-    def subdomains=(v)
-      subdomains.reload(v)
-      @host = nil
-    end
-
-    def host
-      @host ||= (subdomains.to_a + domains.to_a).join('.')
-    end
-
-    def domains
-      @domains ||= @uri.host.split('.').last(2)
+      @components = {}
+      @uri        = URI.parse(string)
     end
 
     def map(component = nil, &block)
@@ -40,6 +33,18 @@ module UriMapper
     end
 
     alias_method :change, :map
+
+    def get(component_name)
+      if self.class.component_names.include?(component_name)
+        public_send(component_name)
+      else
+        raise "Unknown component: #{component_name}"
+      end
+    end
+
+    def set(component_name, replacement)
+      get(component_name).reload(replacement)
+    end
 
     def map!(component = nil)
       # No component requested, just yield the whole thing
@@ -51,21 +56,15 @@ module UriMapper
       # Components with static changes, just merge them in
       if component.is_a? Hash
         component.each do |name, replacement|
-          send(name).reload(replacement)
+          set(name, replacement)
         end
 
         return self
       end
 
       # Component and a block
-      case component.to_sym
-      when :query
-        self.query = query.dup.reload(yield query)
-      when :subdomains
-        self.subdomains = subdomains.dup.reload(yield subdomains)
-      else
-        raise "Unknown URI component: #{component}"
-      end
+      replacement = yield get(component)
+      set(component, replacement)
 
       self
     end
