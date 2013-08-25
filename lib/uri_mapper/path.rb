@@ -25,7 +25,7 @@ module UriMapper
     end
 
     def each(&block)
-      @parts.each(&block)
+      parts.each(&block)
     end
 
     def merge!(other)
@@ -38,7 +38,7 @@ module UriMapper
     def to_s
       if @parts
         # then we've accessed it once, use that as source
-        @parts.join('/')
+        '/' + @parts.join('/')
       else
         # untouched, just return the old one
         @raw_path
