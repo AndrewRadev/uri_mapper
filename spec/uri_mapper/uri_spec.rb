@@ -3,6 +3,19 @@ require 'uri_mapper/uri'
 
 module UriMapper
   describe Uri do
+    describe "#host" do
+      let(:uri) { Uri.new('http://www.example.com/path?query') }
+
+      it "can be retrieved" do
+        uri.host.should eq 'www.example.com'
+      end
+
+      it "can be changed" do
+        uri.host = 'changed.org'
+        uri.to_s.should eq 'http://changed.org/path?query'
+      end
+    end
+
     describe "#map" do
       let(:uri) { Uri.new('http://example.com?search=foo') }
 

@@ -7,20 +7,20 @@ module UriMapper
   class Uri
     extend UriBuilder
 
-    component :query do
-      Query.build(@uri.query)
-    end
-
     component :host, :depends => [:subdomains] do
-      (subdomains.to_a + domains.to_a).join('.')
+      (subdomains.to_a + domains.raw).join('.')
     end
 
     component :domains, :depends => [:host] do
       @uri.host.split('.').last(2)
     end
 
-    component :subdomains, :depends => [:host] do
-      Subdomains.build(@uri.host)
+    component :subdomains, :class => Subdomains, :depends => [:host] do
+      @uri.host
+    end
+
+    component :query, :class => Query do
+      Query.build(@uri.query)
     end
 
     def initialize(string)
@@ -68,6 +68,8 @@ module UriMapper
 
       self
     end
+
+    alias_method :change!, :map!
 
     def to_s
       uri = @uri.dup
