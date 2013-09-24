@@ -17,11 +17,24 @@ module UriMapper
         @parts = source
       else
         @raw_path = source
+
+        # take care of the leading "/"
+        if @raw_path.length > 1 and @raw_path[0] != '/'
+          @raw_path = "/#{@raw_path}"
+        end
       end
     end
 
     def parts
-      @parts ||= @raw_path.split('/')
+      @parts ||= @raw_path.gsub(/^\//, '').split('/')
+    end
+
+    def [](index)
+      parts[index]
+    end
+
+    def []=(index, value)
+      parts[index] = value
     end
 
     def each(&block)
@@ -30,11 +43,10 @@ module UriMapper
 
     def merge!(other)
       other = self.class.build(other)
-      params += other.params
+      @parts = parts + other.parts
       self
     end
 
-    # TODO (2013-08-25) Escaping?
     def to_s
       if @parts
         # then we've accessed it once, use that as source
