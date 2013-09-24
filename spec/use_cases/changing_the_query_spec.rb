@@ -29,6 +29,8 @@ module UriMapper
         uri.map(:query) { |q| q.merge!('color=red') },
         uri.map(:query) { |q| q += 'color=red' },
         uri.map(:query) { |q| q + 'color=red' },
+        uri.merge(:query => 'color=red'),
+        uri.merge(:query => {:color => 'red'}),
       ]
 
       cases.each do |new_uri|

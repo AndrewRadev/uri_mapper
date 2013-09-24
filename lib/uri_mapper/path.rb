@@ -19,7 +19,7 @@ module UriMapper
         @raw_path = source.to_s
 
         # take care of the leading "/"
-        if @raw_path.length > 1 and @raw_path[0] != '/'
+        if @raw_path.length > 0 and @raw_path[0] != '/'
           @raw_path = "/#{@raw_path}"
         end
       end
@@ -56,6 +56,15 @@ module UriMapper
         @raw_path
       end
     end
-    alias_method :serialize, :to_s
+
+    def serialize
+      string = to_s
+
+      if string != '/'
+        string
+      else
+        ''
+      end
+    end
   end
 end
