@@ -7,9 +7,10 @@ Gem::Specification.new do |s|
   s.authors     = ['Andrew Radev']
   s.email       = ['andrey.radev@gmail.com']
   s.homepage    = 'http://github.com/AndrewRadev/uri_mapper'
-  s.summary     = 'TODO'
+  s.summary     = 'Easily modify URIs'
   s.description = <<-D
-    TODO
+    This project provides a class that wraps the standard ruby URI object and
+    uses RackUtils and CGI to provide an easier interface to modify it.
   D
 
   s.add_dependency 'rack', '>= 1.5.2'
