@@ -29,5 +29,6 @@ module UriMapper
     def to_s
       @raw.to_s
     end
+    alias_method :serialize, :to_s
   end
 end

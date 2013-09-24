@@ -73,10 +73,10 @@ module UriMapper
     def to_s
       uri = @uri.dup
 
-      uri.scheme = scheme.to_s
-      uri.host   = host.to_s
-      uri.path   = path.to_s
-      uri.query  = query.to_s
+      uri.scheme = scheme.serialize
+      uri.host   = host.serialize
+      uri.path   = path.serialize
+      uri.query  = query.serialize
 
       uri.to_s
     end

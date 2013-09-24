@@ -16,7 +16,7 @@ module UriMapper
       elsif source.respond_to?(:to_query)
         @raw_query = source.to_query
       else
-        @raw_query = source
+        @raw_query = source.to_s
       end
     end
 
@@ -35,7 +35,6 @@ module UriMapper
     # Override
     def merge!(other)
       other = Query.build(other)
-      params
       other.params.each { |k, v| params[k.to_s] = v }
       self
     end
@@ -45,9 +44,14 @@ module UriMapper
         # then we've accessed it once, use that as source
         build_query(@params)
       else
-        # untouched, just return the old one
+        # untouched, just use the old one
         @raw_query
       end
+    end
+
+    def serialize
+      string = to_s
+      string if string != ''
     end
 
     def to_h

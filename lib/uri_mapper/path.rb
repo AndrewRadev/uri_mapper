@@ -16,7 +16,7 @@ module UriMapper
       elsif source.is_a? Array
         @parts = source
       else
-        @raw_path = source
+        @raw_path = source.to_s
 
         # take care of the leading "/"
         if @raw_path.length > 1 and @raw_path[0] != '/'
@@ -56,5 +56,6 @@ module UriMapper
         @raw_path
       end
     end
+    alias_method :serialize, :to_s
   end
 end

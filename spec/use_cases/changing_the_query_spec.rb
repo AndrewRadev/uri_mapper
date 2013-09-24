@@ -3,7 +3,7 @@ require 'uri_mapper'
 
 module UriMapper
   describe "Changing the query" do
-    specify "replacing the query" do
+    specify "replacing" do
       uri = Uri.new('http://example.com?search=something&color=blue')
 
       cases = [
@@ -19,7 +19,7 @@ module UriMapper
       end
     end
 
-    specify "adding to the query" do
+    specify "adding" do
       uri = Uri.new('http://example.com?search=something&color=blue')
 
       cases = [
@@ -33,6 +33,21 @@ module UriMapper
 
       cases.each do |new_uri|
         new_uri.to_s.should eq 'http://example.com?search=something&color=red'
+      end
+    end
+
+    specify "removing" do
+      uri = Uri.new('http://example.com?search=something&color=blue')
+
+      cases = [
+        uri.map(:query) { |q| nil },
+        uri.map(:query) { |q| '' },
+        uri.map(:query => nil),
+      ]
+
+      cases.each do |new_uri|
+        new_uri.query.params.should eq Hash.new
+        new_uri.to_s.should eq 'http://example.com'
       end
     end
   end
