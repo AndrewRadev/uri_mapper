@@ -82,5 +82,14 @@ module UriMapper
         new_uri.to_s.should eq 'http://example.com?color=blue'
       end
     end
+
+    describe "#merge" do
+      let(:uri) { Uri.new('http://a.b/one/two?search=foo') }
+
+      it "merges components with the given additions" do
+        uri.merge(:query => 'foo=bar').to_s.should eq 'http://a.b/one/two?search=foo&foo=bar'
+        uri.merge(:query => 'foo=bar', :path => 'three').to_s.should eq 'http://a.b/one/two/three?search=foo&foo=bar'
+      end
+    end
   end
 end

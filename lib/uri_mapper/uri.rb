@@ -70,6 +70,18 @@ module UriMapper
 
     alias_method :change!, :map!
 
+    def merge(tree = {})
+      Uri.new(@uri.to_s).merge!(tree)
+    end
+
+    def merge!(tree = {})
+      tree.each do |component_name, addition|
+        get(component_name).merge!(addition)
+      end
+
+      self
+    end
+
     def to_s
       uri = @uri.dup
 
