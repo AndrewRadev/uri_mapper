@@ -2,10 +2,12 @@ require 'set'
 require 'uri_mapper/simple_component'
 
 module UriMapper
+  # Defines a new URI component, generating needed accessors
+  #
+  # Expects the parent to respond to #core
+  #
   module UriBuilder
-    # Defines a new URI component, generating needed accessors
-
-    def initialize_components
+    def initialize_uri_builder
       @components = {}
     end
 
@@ -21,9 +23,9 @@ module UriMapper
         klass   = options[:class]   || SimpleComponent
 
         if block.nil? and depends.length == 1
-          block = lambda { |context| @uri.public_send(depends.first) }
+          block = lambda { |uri| uri.core.public_send(depends.first) }
         elsif block.nil?
-          block = lambda { |context| @uri.public_send(component_name) }
+          block = lambda { |uri| uri.core.public_send(component_name) }
         end
 
         @@component_names << component_name

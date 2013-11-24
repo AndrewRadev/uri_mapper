@@ -23,17 +23,19 @@ module UriMapper
     end
 
     component :domains, :depends => [:host] do
-      @uri.host.split('.').last(2)
+      @core.host.split('.').last(2)
     end
 
-    def initialize(string)
-      @uri = URI.parse(string)
+    attr_reader :core
 
-      initialize_components
+    def initialize(string)
+      @core = URI.parse(string)
+
+      initialize_uri_builder
     end
 
     def dup
-      Uri.new(@uri.to_s)
+      Uri.new(@core.to_s)
     end
 
     def get(component_name)
@@ -98,7 +100,7 @@ module UriMapper
     end
 
     def to_s
-      uri = @uri.dup
+      uri = @core.dup
 
       uri.scheme = scheme.serialize
       uri.host   = host.serialize
