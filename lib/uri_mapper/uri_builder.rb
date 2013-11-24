@@ -11,16 +11,30 @@ module UriMapper
       @components = {}
     end
 
+    def update_uri(uri)
+      self.class.core_component_names.each do |name|
+        uri.public_send("#{name}=", get(name).serialize)
+      end
+
+      uri
+    end
+
     module ClassMethods
-      @@component_names = Set.new
+      @@component_names      = Set.new
+      @@core_component_names = Set.new
 
       def component_names
         @@component_names
       end
 
+      def core_component_names
+        @@core_component_names
+      end
+
       def component(component_name, options = {}, &block)
         depends = options[:depends] || []
         klass   = options[:class]   || Components::Simple
+        is_core = options[:core]
 
         if block.nil? and depends.length == 1
           block = lambda { |uri| uri.core.public_send(depends.first) }
@@ -28,7 +42,8 @@ module UriMapper
           block = lambda { |uri| uri.core.public_send(component_name) }
         end
 
-        @@component_names << component_name
+        @@component_names      << component_name
+        @@core_component_names << component_name if is_core
 
         define_method(component_name) do
           @components[component_name] ||= klass.build(instance_eval(&block))

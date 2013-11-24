@@ -11,12 +11,13 @@ module UriMapper
 
     # TODO (2013-08-25) alias_component, use both :scheme and :protocol
     # TODO (2013-11-24) raw_component that just uses strings
-    component :scheme
-    component :path,       :class => Components::Path
-    component :query,      :class => Components::Query
+    component :scheme, :core => true
+    component :path,   :core => true, :class => Components::Path
+    component :query,  :core => true, :class => Components::Query
+
     component :subdomains, :class => Components::Subdomains, :depends => [:host]
 
-    component :host, :depends => [:subdomains, :domains] do
+    component :host, :core => true, :depends => [:subdomains, :domains] do
       (subdomains.to_a + domains.raw).join('.')
     end
 
@@ -98,14 +99,7 @@ module UriMapper
     end
 
     def to_s
-      uri = @core.dup
-
-      uri.scheme = scheme.serialize
-      uri.host   = host.serialize
-      uri.path   = path.serialize
-      uri.query  = query.serialize
-
-      uri.to_s
+      update_uri(@core.dup).to_s
     end
   end
 end
