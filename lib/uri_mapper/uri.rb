@@ -86,6 +86,17 @@ module UriMapper
       self
     end
 
+    def relative(*component_names)
+      dup.relative!(*component_names)
+    end
+
+    def relative!(*component_names)
+      component_names.each do |name|
+        set(name, get(name).class.relative)
+      end
+      self
+    end
+
     def to_s
       uri = @uri.dup
 

@@ -14,6 +14,11 @@ module UriMapper
         uri.host = 'changed.org'
         uri.to_s.should eq 'http://changed.org/path?query'
       end
+
+      xit "can be relativized" do
+        uri.relative!(:host)
+        uri.to_s.should eq '/path?query'
+      end
     end
 
     describe "#map" do

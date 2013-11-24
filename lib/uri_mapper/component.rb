@@ -12,6 +12,16 @@ module UriMapper
       end
     end
 
+    # Generates a "relative" value for a component. For the protocol, this
+    # would be "//", for a host it would be "", removing the host entirely.
+    #
+    # TODO (2013-11-24) Should accept a @uri, modify it in some way. Same for
+    # reload/initialize/build?
+    #
+    def self.relative
+      raise NotImplementedError
+    end
+
     # The constructor of the Component is called when a component is first
     # accessed by the Uri. It is then initialized with some particular
     # properties of the underlying URI object that are defined by the builder.
