@@ -11,7 +11,7 @@ module UriMapper
         uri.map(:path => 'three/four/five'),
         uri.map(:path => '/three/four/five'),
         uri.map(:path) { |_| '/three/four/five' },
-        uri.map(:path) { |_| Path.build('/three/four/five') },
+        uri.map(:path) { |_| Components::Path.build('/three/four/five') },
       ]
 
       cases.each do |new_uri|

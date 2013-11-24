@@ -1,5 +1,5 @@
 require 'set'
-require 'uri_mapper/simple_component'
+require 'uri_mapper/components'
 
 module UriMapper
   # Defines a new URI component, generating needed accessors
@@ -20,7 +20,7 @@ module UriMapper
 
       def component(component_name, options = {}, &block)
         depends = options[:depends] || []
-        klass   = options[:class]   || SimpleComponent
+        klass   = options[:class]   || Components::Simple
 
         if block.nil? and depends.length == 1
           block = lambda { |uri| uri.core.public_send(depends.first) }

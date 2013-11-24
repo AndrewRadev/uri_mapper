@@ -11,7 +11,7 @@ module UriMapper
         uri.map(:query => 'something=blue'),
         uri.map(:query) { |q| {:something => 'blue'} },
         uri.map(:query) { |q| 'something=blue' },
-        uri.map(:query) { |q| Query.build(:something => 'blue') },
+        uri.map(:query) { |q| Components::Query.build(:something => 'blue') },
       ]
 
       cases.each do |new_uri|

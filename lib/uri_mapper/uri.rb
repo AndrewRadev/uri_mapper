@@ -1,8 +1,6 @@
 require 'uri'
 require 'uri_mapper/uri_builder'
-require 'uri_mapper/path'
-require 'uri_mapper/query'
-require 'uri_mapper/subdomains'
+require 'uri_mapper/components'
 
 # TODO (2013-08-25) Make a testing plan, this'll get complicated
 #
@@ -14,9 +12,9 @@ module UriMapper
     # TODO (2013-08-25) alias_component, use both :scheme and :protocol
     # TODO (2013-11-24) raw_component that just uses strings
     component :scheme
-    component :path, :class => Path
-    component :query, :class => Query
-    component :subdomains, :class => Subdomains, :depends => [:host]
+    component :path,       :class => Components::Path
+    component :query,      :class => Components::Query
+    component :subdomains, :class => Components::Subdomains, :depends => [:host]
 
     component :host, :depends => [:subdomains, :domains] do
       (subdomains.to_a + domains.raw).join('.')

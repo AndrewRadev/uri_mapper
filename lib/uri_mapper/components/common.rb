@@ -3,7 +3,7 @@ module UriMapper
   # implementations can vary, but this class provides the minimal protocol they
   # need to guarantee so the Uri can use them.
   #
-  class Component
+  class Common
     def self.build(source)
       if source.is_a?(self)
         source
