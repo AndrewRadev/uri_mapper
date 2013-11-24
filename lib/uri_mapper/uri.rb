@@ -32,6 +32,10 @@ module UriMapper
       @uri        = URI.parse(string)
     end
 
+    def dup
+      Uri.new(@uri.to_s)
+    end
+
     def get(component_name)
       if self.class.component_names.include?(component_name)
         public_send(component_name)
@@ -45,7 +49,7 @@ module UriMapper
     end
 
     def map(component = nil, &block)
-      Uri.new(@uri.to_s).map!(component, &block)
+      dup.map!(component, &block)
     end
 
     alias_method :change, :map
@@ -71,7 +75,7 @@ module UriMapper
     alias_method :change!, :map!
 
     def merge(tree = {})
-      Uri.new(@uri.to_s).merge!(tree)
+      dup.merge!(tree)
     end
 
     def merge!(tree = {})
