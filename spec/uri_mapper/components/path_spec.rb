@@ -4,19 +4,6 @@ require 'uri_mapper/components'
 module UriMapper
   module Components
     describe Path do
-      describe ".build" do
-        let(:path) { Path.new('/foo/bar/baz') }
-
-        it "returns its argument if it's already a Query" do
-          Path.build(path).should equal path
-        end
-
-        it "instantiates a new Query" do
-          Path.build(path.to_s).should_not equal path
-          Path.build(path.to_s).should eq path
-        end
-      end
-
       describe "#merge" do
         it "combines two paths" do
           first  = Path.new('/foo/bar')

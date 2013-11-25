@@ -5,19 +5,6 @@ require 'uri_mapper/components'
 module UriMapper
   module Components
     describe Query do
-      describe ".build" do
-        let(:query) { Query.new('foo=bar') }
-
-        it "returns its argument if it's already a Query" do
-          Query.build(query).should equal query
-        end
-
-        it "instantiates a new Query" do
-          Query.build(query.to_s).should_not equal query
-          Query.build(query.to_s).should eq query
-        end
-      end
-
       describe "#merge" do
         it "combines two queries" do
           first  = Query.new('one=blue')
