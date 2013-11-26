@@ -18,84 +18,9 @@ module UriMapper
       (subdomains.to_a + domains.raw).join('.')
     end
 
+    # TODO (2013-11-26) accesses @core. Need to find a way to avoid that
     component :domains, :depends => [:host] do
       @core.host.split('.').last(2)
-    end
-
-    attr_reader :core
-
-    def initialize(string)
-      @core = URI.parse(string)
-      super()
-    end
-
-    def dup
-      Uri.new(@core.to_s)
-    end
-
-    def get(component_name)
-      if self.class.component_names.include?(component_name)
-        public_send(component_name)
-      else
-        raise "Unknown component: #{component_name}"
-      end
-    end
-
-    def set(component_name, replacement)
-      get(component_name).reload(replacement)
-    end
-
-    def map(component = nil, &block)
-      dup.map!(component, &block)
-    end
-
-    alias_method :change, :map
-
-    def map!(component = nil)
-      if not component
-        # No component requested, just yield the whole thing
-        yield self
-      elsif component.is_a? Hash
-        # Components with static changes, just merge them in
-        component.each do |name, replacement|
-          set(name, replacement)
-        end
-      else
-        # Component and a block
-        replacement = yield get(component)
-        set(component, replacement)
-      end
-
-      self
-    end
-
-    alias_method :change!, :map!
-
-    def merge(tree = {})
-      dup.merge!(tree)
-    end
-
-    def merge!(tree = {})
-      tree.each do |component_name, addition|
-        get(component_name).merge!(addition)
-      end
-
-      self
-    end
-
-    def relative(*component_names)
-      dup.relative!(*component_names)
-    end
-
-    def relative!(*component_names)
-      component_names.each do |name|
-        set(name, get(name).class.relative)
-      end
-      self
-    end
-
-    def to_s
-      update_uri(@core.dup).to_s
     end
   end
 end
