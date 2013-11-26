@@ -1,14 +1,11 @@
 require 'uri'
-require 'uri_mapper/uri_builder'
+require 'uri_mapper/abstract_uri'
 require 'uri_mapper/components'
 
 # TODO (2013-08-25) Make a testing plan, this'll get complicated
 #
 module UriMapper
-  class Uri
-    include UriBuilder
-    extend UriBuilder::ClassMethods
-
+  class Uri < AbstractUri
     # TODO (2013-08-25) alias_component, use both :scheme and :protocol
     # TODO (2013-11-24) raw_component that just uses strings
     component :scheme, :core => true
@@ -29,8 +26,7 @@ module UriMapper
 
     def initialize(string)
       @core = URI.parse(string)
-
-      initialize_uri_builder
+      super()
     end
 
     def dup
