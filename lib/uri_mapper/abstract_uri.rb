@@ -22,6 +22,7 @@ module UriMapper
         klass   = options[:class]   || Components::Simple
         is_core = options[:core]
 
+        # TODO (2013-11-26) This'll be removed when components are just given the full URI
         if block.nil? and depends.length == 1
           block = lambda { |uri| uri.core.public_send(depends.first) }
         elsif block.nil?
