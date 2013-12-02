@@ -9,14 +9,6 @@ module UriMapper
   # TODO (2013-11-26) Test
   class AbstractUri
     class << self
-      def component_names
-        @component_names ||= Set.new
-      end
-
-      def core_component_names
-        @core_component_names ||= Set.new
-      end
-
       def component(component_name, options = {}, &block)
         depends = options[:depends] || []
         klass   = options[:class]   || Components::Simple
@@ -43,6 +35,14 @@ module UriMapper
             @components[component_name] = nil
           end
         end
+      end
+
+      def component_names
+        @component_names ||= Set.new
+      end
+
+      def core_component_names
+        @core_component_names ||= Set.new
       end
     end
 
